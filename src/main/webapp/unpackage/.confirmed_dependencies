@@ -1,0 +1,93 @@
+{
+	"index.html": {
+		"refer": [
+			"pages/enterprise.html",
+			"pages/position.html",
+			"pages/discover.html",
+			"pages/lesson.html",
+			"pages/contact.html",
+			"pages/teacher.html",
+			"pages/my.html",
+			"pages/freeListen.html"
+		]
+	},
+	"pages/enterprise.html": {
+		"refer": [
+			"index.html"
+		]
+	},
+	"pages/position.html": {
+		"refer": [
+			"index.html"
+		],
+		"resources": [
+			"index.html"
+		]
+	},
+	"pages/lesson.html": {
+		"refer": [
+			"index.html",
+			"pages/lessonPurchase.html",
+			"pages/discover.html"
+		]
+	},
+	"pages/discover.html": {
+		"refer": [
+			"pages/lesson.html",
+			"pages/my.html",
+			"index.html"
+		]
+	},
+	"pages/my.html": {
+		"refer": [
+			"pages/discover.html",
+			"index.html",
+			"pages/allAppointment.html",
+			"pages/allBook.html",
+			"pages/lesson.html"
+		]
+	},
+	"pages/contact.html": {
+		"refer": [
+			"index.html"
+		]
+	},
+	"pages/teacher.html": {
+		"refer": [
+			"index.html"
+		]
+	},
+	"pages/waitToDeal.html": {
+		"refer": [
+			"pages/allAppointment.html",
+			"pages/dealed.html"
+		]
+	},
+	"pages/allAppointment.html": {
+		"refer": [
+			"pages/waitToDeal.html",
+			"pages/my.html"
+		]
+	},
+	"pages/dealed.html": {
+		"refer": [
+			"pages/waitToDeal.html"
+		]
+	},
+	"pages/cancelled_refund.html": {
+		"refer": [
+			"pages/allBook.html"
+		]
+	},
+	"pages/allBook.html": {
+		"refer": [
+			"pages/cancelled_refund.html",
+			"pages/my.html"
+		]
+	},
+	"pages/freeListen.html": {
+		"refer": [
+			"index.html"
+		]
+	}
+}

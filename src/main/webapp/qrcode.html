@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    
+<title>Insert title here</title>
+<script src="js/jquery.min.js"></script>
+</head>
+<body>
+	  <div id="output">
+	  
+	  </div>
+
+	  <script type="text/javascript" src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js">
+	  </script>
+	  <script type="text/javascript">
+	  	jQuery(function(){
+	  		jQuery('#output').qrcode({
+	  			render:"canvas",
+	  			width:200,
+	  			height:200,
+	  			text:"http://www.tainai.ltd/neueduClient/index.html?qid=1",
+	  			typeNumber:-1,
+	  			correctLevel:2,
+	  			background:"#ffffff",
+	  			foreground:"#000000",
+	  		})
+	  	})
+	  </script>
+
+</script>
+
+</body>
+</html>

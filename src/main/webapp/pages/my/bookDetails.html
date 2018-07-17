@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+
+	<head>
+		
+		<meta charset="utf-8">
+		<title>bookDetails</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-left: 0;padding-right: 0;">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">预约详情</h1>
+			</div>
+		</header>
+		
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll" id="scroll">
+				<ul class="mui-table-view mui-table-view-chevron">
+				</ul>
+			</div>
+		</div>
+		<script src="../../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/urlParameter.js"></script>
+		<script>
+			
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style:'circle',
+						callback: pulldownRefresh
+					}
+				}
+			});
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+
+			
+			var book;
+			var flisten;
+			$(document).ready(function(){
+				var qid=1;
+				var id = $.getUrlParam('id');
+				//ajax响应
+				//根据id向服务器请求预约详情
+				$.ajax({
+					url:'/neueduClient/book/BookHandler_findBookById',
+					dataType:'json',
+					data:{id:id},
+					type:'post',
+					async:false,
+					success:function(data){
+						book = data;
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				$.ajax({
+					url:'/neueduClient/lesson/LessonHandler_findFreelistenById',
+					dataType:'json',
+					data:{qid:qid},
+					type:'post',
+					async:false,
+					success:function(data){
+						flisten = data;
+						console.log(flisten);
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				pulldownRefresh();
+			});
+			
+			function refreshData() {
+				var div = document.getElementById("scroll");
+				var i = 0;
+				while(book.fid != flisten[i].id){
+					i++;
+				}
+				div.innerHTML =  
+					 '<ul class="mui-table-view mui-table-view-chevron">'
+					+'	<div class="mui-card-header">预约编号:'+book.id+'</div>'
+					+'	<div class="mui-card-content">'
+					+'		<div class="mui-card-content-inner" >'
+					+'			<li class="mui-table-view-cell mui-media">'
+					+'				<a href="../freeListen.html?id='+book.fid+'">'
+					+'					<img class="mui-media-object mui-pull-left" src="/upload/image/'+flisten[i].imgurl+'" >'
+					+'					<div class="mui-media-body" style="float:right">'
+					+'						课程编号: '+flisten[i].id+'<br />'
+					+'						课程: '+flisten[i].title+'<br />'
+					+'						备注：'+book.comment
+					+'					</div>'
+					+'				</a>'
+					+'			</li>'
+					+'		</div>'
+					+'	</div>'
+					+'	<div class="mui-card-footer">'
+					+'		预约状态：'+book.status
+					+'	</div>'
+					+'</ul>';
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					refreshData();
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					mui.toast("已刷新");
+				}, 100);
+			}
+
+		</script>
+	</body>
+
+</html>

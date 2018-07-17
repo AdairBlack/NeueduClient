@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>首页</title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+	<!--标准mui.css-->
+	<link rel="stylesheet" href="css/mui.min.css">
+	<!--App自定义的css-->
+	<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+	<style>
+		.mui-slider-item{
+			text-align: center;
+		}
+	</style>
+	<script src="js/jquery.min.js"></script>
+</head>
+<body>
+	
+			<!--
+	    	作者：wdb
+	    	时间：2018-06-22
+	    	描述：导航栏
+	    -->
+	<nav class="mui-bar mui-bar-tab">
+		<a class="mui-tab-item mui-active" href="index.html" id="index">
+			<span class="mui-icon mui-icon-home"></span>
+			<span class="mui-tab-label">首页</span>
+		</a>
+		<a class="mui-tab-item" href="pages/lesson.html">
+			<span class="mui-icon mui-icon-list"></span>
+			<span class="mui-tab-label">课程</span>
+		</a>
+		<a class="mui-tab-item" href="pages/discover.html">
+			<span class="mui-icon mui-icon-image"></span>
+			<span class="mui-tab-label">发现</span>
+		</a>
+		<a class="mui-tab-item" href="pages/my.html">
+			<span class="mui-icon mui-icon-contact"></span>
+			<span class="mui-tab-label">我的</span>
+		</a>
+	</nav>    	
+    	
+
+	<!--
+        图片轮播
+    -->
+    <div id="slider" class="mui-slider" >
+    	<div class="mui-slider-group mui-slider-loop" id="swiper">
+    		
+    	</div>
+    	<div class="mui-slider-indicator" id="indicator">
+				
+		</div>
+    </div>
+    <!--
+    	选项
+    -->
+    <div class="mui-content">
+    	<div class="mui-content-padded">
+    		<div class="flex-container">
+    			<a id="icon-home" href="pages/enterprise.html">
+    				<span style="width:24%;text-align: center;"  class="mui-icon mui-icon-home"><br>
+    				<span style="font-size: small;">企业介绍</span></span>
+    			</a>
+    			<a id="icon-person" href="pages/teacher.html">
+    				<span style="width: 24%;text-align: center;" class="mui-icon mui-icon-person"><br>
+    				<span  style="font-size: small;">师资力量</span></span>
+    			</a>
+                <a id="icon-location" href="pages/position.html">
+                	<span style="width: 24%;text-align: center;" class="mui-icon mui-icon-location"><br>
+                	<span style="font-size: small;">学校位置</span></span>
+                </a>
+                <a id="icon-chatboxes" href="pages/contact.html">
+                	<span style="width: 23%;text-align: center;" class="mui-icon mui-icon-chatboxes"><br>
+                	<span style="font-size: small;">联系我们</span></span>
+                </a>
+    		</div>
+    	</div>
+    	<hr />
+    	
+    	
+	    <!-- 试听课-->
+		<div class="mui-card">
+			<div  class="mui-card-header"><h style="text-align: center; font-size: medium;">试听课预约</h><a  id="more">更多☛</a></div>
+			<div class="mui-card-content">
+				<div class="mui-card-content-inner">
+					<ul class="mui-table-view" id="list">
+	
+				    </ul>
+				</div>
+			</div>
+		</div>
+		    <!-- 精品课-->
+	</div>	
+
+    
+    <script src="js/mui.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/urlParameter.js"></script>
+    <script type="text/javascript" charset="utf-8">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			
+	
+	        mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+	
+	       var active = null,
+				lastid, span;
+			mui(".mui-content").on("tap", "a", function() {
+				var id = this.getAttribute("id");
+				if (!active) {
+					this.classList.add("active");
+					if (id) {
+						span = this.querySelector("span");
+						span.classList.remove("mui-" + id);
+						span.classList.add("mui-" + id + "-filled");
+					}
+					active = this;
+				} else {
+					active.classList.remove("active");
+					if (lastid) {
+						span.classList.remove("mui-" + lastid + "-filled");
+						span.classList.add("mui-" + lastid);
+					}
+
+					this.classList.add("active");
+					if (id) {
+						span = this.querySelector("span");
+						span.classList.remove("mui-" + id);
+						span.classList.add("mui-" + id + "-filled");
+					}
+
+					active = this;
+				}
+				lastid = id;
+			});
+			
+			var qid=$.getUrlParam('qid');
+			
+			$("#index").attr("href","index.html?qid="+qid);
+			
+			sessionStorage.setItem("qid",qid);
+			
+			//轮播图
+			$.ajax({
+				url:'/neueduClient/enterprise/EnterpriseHandler_findSwiperById',
+				data:{qid:qid},
+				dataType:'json',
+				type:'post',
+				async:false,
+				timeout:10000,
+				success:function(swiper){
+					html1=[];
+					html2=[];
+					var Swiper = document.getElementById("swiper");
+					var Indicator = document.getElementById("indicator");
+					for(var i=0; i<swiper.length;i++){
+						
+						if(i==0){
+							html1.push('<div class="mui-slider-item mui-slider-item-duplicate">'
+					                 +    '<a href="#">'
+						             +       '<img src="/upload/image/'+swiper[i].imgurl+'">'
+					                 +    '</a>'
+				                     +'</div>');
+							html2.push('<div class="mui-indicator mui-active"></div>');
+						}else{
+							html2.push('<div class="mui-indicator "></div>');
+						}
+						
+						html1.push('<div class="mui-slider-item ">'
+				                 +    '<a href="#">'
+					             +       '<img src="/upload/image/'+swiper[i].imgurl+'">'
+				                 +    '</a>'
+			                     +'</div>');
+						
+						if(i==(swiper.length-1)){
+							html1.push('<div class="mui-slider-item mui-slider-item-duplicate">'
+					                 +    '<a href="#">'
+						             +       '<img src="/upload/image/'+swiper[i].imgurl+'">'
+					                 +    '</a>'
+					                 +'</div>');
+						}
+					}	
+					Swiper.innerHTML= html1.join('');
+					Indicator.innerHTML=html2.join('');
+					
+					var slider = mui("#slider");
+
+					slider.slider({
+						interval: 5000
+					});
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+			});
+			
+			//预约课
+			$.ajax({
+				url:'/neueduClient/lesson/LessonHandler_findFewFreelistenById',
+				data:{qid:qid},
+				dataType:'json',
+				type:'post',
+				async:false,
+				timeout:10000,
+				success:function(freelisten){
+					var list = document.getElementById("list");
+					html=[];
+					for(var i =0;i<freelisten.length;i++){
+						var url="pages/freeListen.html?id="+freelisten[i].id;
+						html.push('<li class="mui-table-view-cell mui-media">'
+								 +	'<div style="position:relative;">'
+								 +		'<img style="width: 100%;" src="/upload/image/'+freelisten[i].imgurl+'">'
+								 +   	'<div style="position:absolute; text-align: center;  top:50%; left: 50%; width: 240px; margin-left: -120px; " class="mui-card">'
+								 +			       '<div class="mui-card-content" onclick="javascrpt:window.open(\''+url+'\',\'_self\')">'
+								 +			            '<div class="mui-card-content-inner">'
+								 +					        '<a href="'+url+'">免费试听课<br>'+freelisten[i].title+'</a>'
+								 +				        '</div>'
+								 +			       '</div>'
+								 +		 '</div>'
+								 +	 '</div>'
+								 +'</li>');
+					}
+					list.innerHTML= html.join('');
+					
+					$("#more").attr("href","pages/freeListenList.html?qid="+qid);
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+			});
+				
+			
+			
+		</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>预约课单</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+        <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(300)
+    	 })
+       </script>
+	</head>
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">体验课预约</h1>
+		</header>
+		
+		<div class="mui-content">
+			<ul class="mui-table-view" id="list">
+			</ul>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/urlParameter.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			var qid=$.getUrlParam('qid');	
+			$("#back").attr("href","../index.html?qid="+qid);
+			//预约课
+			$.ajax({
+				url:'/neueduClient/lesson/LessonHandler_findFreelistenById',
+				data:{qid:qid},
+				dataType:'json',
+				type:'post',
+				async:false,
+				timeout:10000,
+				success:function(freelisten){
+					var list = document.getElementById("list");
+					html=[];
+					for(var i =0;i<freelisten.length;i++){
+						var url="../pages/freeListen.html?id="+freelisten[i].id;
+						html.push('<li class="mui-table-view-cell mui-media">'
+								 +	'<div style="position:relative;">'
+								 +		'<img style="width: 100%;" src="/upload/image/'+freelisten[i].imgurl+'">'
+								 +   	'<div style="position:absolute; text-align: center;  top:50%; left: 50%; width: 240px; margin-left: -120px; " class="mui-card">'
+								 +			       '<div class="mui-card-content" onclick="javascrpt:window.open(\''+url+'\',\'_self\')">'
+								 +			            '<div class="mui-card-content-inner">'
+								 +					        '<a href="'+url+'">免费试听课<br>'+freelisten[i].title+'</a>'
+								 +				        '</div>'
+								 +			       '</div>'
+								 +		 '</div>'
+								 +	 '</div>'
+								 +'</li>');
+					}
+					list.innerHTML= html.join('');
+					
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+			});
+				
+		</script>
+	</body>
+
+</html>

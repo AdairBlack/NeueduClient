@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>企业介绍</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<!--App自定义的css
+		<link rel="stylesheet" type="text/css" href="../css/app.css" />-->
+		<link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+        <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(200)
+    	 })
+        </script>
+	</head>
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+	<body>
+	
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a href="../index.html" id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">企业介绍</h1>
+		</header>
+		 
+	
+
+		
+		
+		
+		<div class="mui-content">
+			<div style="top:;">
+			    <video  width="100%" id="enterpriseVideo"  controls="controls"></video>
+	        </div>
+	    
+			<div class="mui-card">
+				<div class="mui-card-header" id = "enterpriseName"></div>
+				<div class="mui-card-content">
+					<div class="mui-card-content-inner" id="enterpriseIntroduction">
+						
+					</div>
+					<h1 align="center"><span id="enterpriseJczs"></span></h1>
+
+				</div>
+				
+			</div>
+		
+			
+			
+			
+			
+			
+			<!--<div class="mui-card">
+				<div class="mui-card-header mui-card-media">
+					<div class="mui-card-media-object mui-pull-left">
+						<img src="../images/logo.png" width="34px" height="34px" />
+					</div>
+					<div class="mui-card-media-body">
+						小M
+						<p class="mui-ellipsis">发表于 6小时前</p>
+					</div>
+				</div>
+				<div class="mui-card-content mui-card-media" style="height:40vw;background-image:url(../images/yuantiao.jpg)"></div>
+				<div class="mui-card-footer">
+					<a class="mui-card-link">Like</a>
+					<a class="mui-card-link">Comment</a>
+					<a class="mui-card-link">Read more</a>
+				</div>
+			</div>-->
+			
+			
+		
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			
+
+			var qid=sessionStorage.getItem("qid");
+			$("#back").attr("href","../index.html?qid="+qid);
+			//ajax响应
+			$.ajax({
+				    url:'/neueduClient/enterprise/EnterpriseHandler_findEnterpriseById',
+					data:{qid:qid},
+					dataType:'json',
+					type:'post',
+					timeout:10000,
+					success:function(data){
+						//返回响应
+						var enterpriseName = "<tr><td>" + data.name + "</td></tr>";
+						$("#enterpriseName").append(enterpriseName);
+						$("#enterpriseVideo").attr("src","/upload/video/"+data.videopath);
+						$("#enterpriseIntroduction").append(data.introduction);
+						$("#enterpriseJczs").append(data.jczs);
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				}
+			);
+			
+			
+			
+        </script>
+		<script src="../js/mui.min.js"></script>
+	</body>
+
+</html>

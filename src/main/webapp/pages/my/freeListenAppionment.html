@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>预约</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../../css/loading.css"/>
+        <script src="../../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(300)
+    	 })
+       </script>
+	</head>
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a  class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" id="back"></a>
+			<h1 class="mui-title">体验课预约</h1>
+		</header>
+		
+		<div class="mui-content" style="margin-top: 20;">
+			<div style="top: 20;">
+				<div class="mui-card" style="background: aliceblue;">
+			        <div class="mui-card-content" id="content" >
+			        		<ul class="mui-table-view" style="background: aliceblue;"> 
+				                <li class="mui-table-view-cell mui-media">
+									<img class="mui-media-object mui-pull-left"  id="icon">
+									<div class="mui-media-body">
+							                        预约课程：
+							            <p class='mui-ellipsis'><span style="color: black;" id="className"></span></p>
+						           </div>
+				                </li>
+				            </ul>
+			        </div>	
+			    </div> 
+			    
+			</div>
+				<form class="mui-input-group">
+						<div class="mui-input-row ">
+							<label>我的姓名</label>
+							<input id="name" type="text" class="mui-input-speech mui-input-clear" placeholder="输入客户姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>我的电话</label>
+							<input id="phone" type="text" class="mui-input-speech mui-input-clear" placeholder="输入联系电话">
+						</div>
+				</form>
+				<div class="mui-input-row" style="margin: 10px 5px;" >
+						<textarea id="comment" rows="8" placeholder="输入您的备注"></textarea>
+				</div>
+				<div class="mui-button-row">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="appionment()">预约</button>&nbsp;&nbsp;
+				</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/urlParameter.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			var listenId=$.getUrlParam('id');
+			var openId=null;
+			$.ajax({
+				    url:'/neueduClient/lesson/LessonHandler_findOneFreelistenById',
+					data:{id:listenId},
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:10000,
+					success:function(freelisten){
+						$("#back").attr("href","../../pages/freeListen.html?id="+freelisten.id);
+						var url="../../pages/freeListen.html?id="+freelisten.id;
+						$("#content").attr("onclick","javascript:window.open(\'"+url+"\',\'_self\')");
+						$("#icon").attr("src","/upload/image/"+freelisten.imgurl);
+						$("#className").append(freelisten.title);
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+			   });
+			
+			function appionment(){
+				$.ajax({
+					url:'/neueduClient/GetUserInfo',
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:1000,
+					success:function(wxUserInfo){
+						openId=wxUserInfo.openid;
+						
+						$.ajax({
+							 url:'/neueduClient/lesson/LessonHandler_freelistenbook',
+								data:{
+									fid:listenId,
+									username:document.getElementById("name").value,
+									tel:document.getElementById("phone").value,
+									booktime:timetrans(new Date().getTime()),
+									status:'待处理',
+									comment:document.getElementById("comment").value,
+									openid:openId,
+		                        },
+								dataType:'json',
+								type:'post',
+								async:false,
+								timeout:10000,
+								success:function(index){
+									alert("您已成功预约！");
+									window.location.href="../../pages/freeListen.html?id="+listenId;
+								},
+								error:function(xhr,type,erroeThrown){
+									alert("预约失败！");
+									window.location.href="../../pages/freeListen.html?id="+listenId;
+								}
+						});
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+						openId="meiyou";
+					}
+				});
+				
+				
+				
+				
+			}
+			
+			function timetrans(date){
+			    var date = new Date(date);//如果date为13位不需要乘1000
+			    var Y = date.getFullYear() + '-';
+			    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+			    var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+			    var h = (date.getHours()+8 < 10 ? '0' + (date.getHours()+8) : date.getHours()+8) + ':';
+			    var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+			    var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
+			    return Y+M+D+h+m+s;
+			}
+		</script>
+	</body>
+
+</html>

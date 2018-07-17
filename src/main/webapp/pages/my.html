@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>我的</title>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script src="../js/mui.min.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/icons-extra.css" rel="stylesheet"/>
+    <script src="../js/jquery.min.js" ></script>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a id="back" class="mui-action-back mui-icon  mui-pull-left"></a>
+		<h1 id="title" class="mui-title">我的信息</h1>
+	</header>
+	<div class="mui-content">
+		<div class="wodehead" style="top:'45px'; height:50vw; background: url(/upload/image/wodebackground.jpg); background-size: cover;" >
+			<a id="headsrc"><img id="headicon" style="width:25vw;height:25vw;border-radius:25vw;margin-top: 10%;margin-left: 38%; "/></a>
+			<h6 id="name" style="width:100vw;height:10vw;text-align: center; "></h6>
+		</div>
+		<div id="">
+			<a id="book">
+				<button type="button" class="mui-btn mui-btn-outlined" style="height: 21vw;width: 32%;">
+					<span class="mui-icon-extra mui-icon-extra-notice" style="font-size: 9vw;color: #000000;"></span><br />
+					<span class="mui-tab-label">我的预约</span>
+				</button>
+			</a>
+			<a id="order">
+				<button type="button" class="mui-btn mui-btn-outlined" style="height: 21vw;width: 32%;">
+					<span class="mui-icon-extra mui-icon-extra-cart" style="font-size: 9vw;color: #000000;"></span><br />
+					<span class="mui-tab-label">我的订单</span>
+				</button>
+			</a>
+			<a id="info">
+				<button type="button" class="mui-btn mui-btn-outlined" style="height: 21vw;width: 32%;">
+					<span class="mui-icon-extra mui-icon-extra-comment" style="font-size: 9vw;color: #000000;"></span><br />
+					<span class="mui-tab-label">我的信息</span>
+				</button>
+			</a>
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+				<a class="mui-tab-item " id="index">
+					<span class="mui-icon mui-icon-home"></span>
+					<span class="mui-tab-label">首页</span>
+				</a>
+				<a class="mui-tab-item" href="../pages/lesson.html">
+					<span class="mui-icon mui-icon-list"></span>
+					<span class="mui-tab-label">课程</span>
+				</a>
+				<a class="mui-tab-item" href="../pages/discover.html">
+					<span class="mui-icon mui-icon-image"></span>
+					<span class="mui-tab-label">发现</span>
+				</a>
+				<a class="mui-tab-item mui-active" href="my.html">
+					<span class="mui-icon mui-icon-contact"></span>
+					<span class="mui-tab-label">我的</span>
+				</a>
+			</nav>    	
+	</div>
+	<script src="../js/jquery.min.js" ></script>
+	<script type="text/javascript">
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			var qid=sessionStorage.getItem("qid");
+			$("#index").attr("href","../index.html?qid="+qid);
+			
+			$(document).ready(function(){
+				var timestamp=new Date().getTime();
+				$("#book").attr("href","my/allBook.html?val="+timestamp);
+				$("#order").attr("href","my/allOrder.html?val="+timestamp);
+				$("#info").attr("href","my/myInfo.html?val="+timestamp);
+				
+				$.ajax({
+					url:'/neueduClient/GetUserInfo',
+					dataType:'json',
+					type:'post',
+					timeout:1000,
+					success:function(wxUserInfo){
+						$("#headicon").attr('src',wxUserInfo.headimgurl);
+						$("#name").html(wxUserInfo.nickname);
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+						$("#headicon").attr('src','/upload/image/default_user_icon.jpg');
+						$("#name").html("点击头像登陆");
+						$("#headsrc").attr('href','http://www.tainai.ltd/neueduClient')
+					}
+				});
+				
+			});
+
+    </script>
+</body>
+</html>

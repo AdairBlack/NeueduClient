@@ -1,0 +1,588 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>发现</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/icons-extra.css" />
+		<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			.content{
+				font-size: large;
+			}
+			.picture{
+				
+			}
+			.status{
+				font-size: medium;
+				color: lightgray;
+			}
+			.like1
+			{
+				background-color: lightgray;
+				float: right;
+			    line-height: 1.5;
+			}
+			
+			.like2
+			{
+				background-color: lightgray;
+				float: right;
+				margin: 0 4px;
+			    line-height: 1.5;
+			}
+			
+			.comment{
+				margin: 0 3px;
+			}
+			
+			.zan{
+				margin: 0 3px;
+			}
+			.likeRecord{
+				font-size: medium;
+				background:  #F0F0F0;
+			}
+			
+			#textplace{
+				
+				/*当弹窗显示时，屏幕滚动时，弹窗始终保持位置固定在屏幕正中，不随屏幕滚动而变化位置*/
+				position:fixed;
+				top: 50%;
+	            left: 15%;
+	            width: 70%;
+				height: auto;
+				z-index:2;
+				display:none;
+			}
+			.md-content {
+				color: #fff;
+				height: 100%;
+				background:#F7FBFD;
+				position: relative;
+				border-radius: 9px;
+				margin: 0 auto;
+				box-shadow: darkgrey 0px 2px 8px 2px ;//边框阴影
+			}
+			
+			.md-content h3 {
+				margin: 0;
+				padding: 0.4em;
+				text-align: center;
+				font-size: medium;
+				font-weight: 300;
+				opacity: 0.8;
+				
+				background: rgba(0,0,0,0.2);
+				border-radius: 8px 8px 10px 10px;
+			}
+			#bodyContent{
+				z-index: 1;
+			}
+		</style>
+		<!--App自定义的css-->
+		<style type="text/css">
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+				font-size: 15px;
+				margin-top:8px;
+				color: #333;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+	<div id="bodyContent">
+		<header id="header" class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">发现</h1>
+		</header>
+		
+						    	<!--
+			            	作者：offline
+			            	时间：2018-06-23
+			            	描述：导航栏
+			            -->
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item"  id="index">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" href="../pages/lesson.html">
+				<span class="mui-icon mui-icon-list"></span>
+				<span class="mui-tab-label">课程</span>
+			</a>
+			<a class="mui-tab-item mui-active" href="../pages/discover.html">
+				<span class="mui-icon mui-icon-image"></span>
+				<span class="mui-tab-label">发现</span>
+			</a>
+			<a class="mui-tab-item" href="../pages/my.html">
+				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-tab-label">我的</span>
+			</a>
+		</nav>
+		
+		<div class="mui-content"> 
+			<img style="width: 100%;" src="/upload/image/head.png"/>
+			
+			<!--
+            	作者：offline
+            	时间：2018-06-23
+            	描述：朋友圈
+            -->
+			<ul class="mui-table-view" id="content">
+	    	</ul>
+	    	
+	    	
+
+		</div>
+	</div>
+		
+		<div id="textplace">
+        	<div class="md-content">
+        		<h3>评论</h3>
+        		<form onsubmit="comment()">
+        		<div>
+        			<div class="mui-input-row" style="margin: 10px 5px;" >
+						<input id="textarea" type="search" placeholder="评论" style="background: white; color: black; box-shadow: darkgrey 0px 0px 6px 0.5px inset;" ></input>
+				    </div>
+        		</div>
+        		</form>
+        	</div>
+        </div>
+
+	    
+		
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+	        mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+            
+	        var qid=sessionStorage.getItem("qid");
+	        $("#index").attr("href","../index.html?qid="+qid);
+	        
+	        var mtime=new Array();
+	        var mtitle=new Array();
+	        var mid=new Array();
+	        
+		    $.ajax({
+				url:'/neueduClient/enterprise/EnterpriseHandler_findMessageById',
+				data:{qid:qid},
+				dataType:'json',
+				type:'post',
+				async:false,
+				timeout:10000,
+				success:function(data){
+					length=data.length;
+					var content = document.getElementById("content");
+					var html=[];
+					for(var i=0;i<length;i++){
+						mid[i]=data[i].mid;
+						mtitle[i]=data[i].mtitle;
+						var date=new Date(data[i].mtime);
+						mtime[i]=date.getFullYear()+"年"+(date.getMonth()+1)+"月"+date.getDate()+"日"+(date.getHours()-8)+"点";
+						console.log(mtime[i]);
+						
+						
+						
+						
+						html.push('<li class="mui-table-view-cell">'
+						         +     '<div class="mui-card">'
+					        	 +        '<div class="mui-card-content">'
+					        	 +	        '<div class="mui-card-content-inner">'
+					        	 +		        '<div class="content">'
+					        	 +                 '<span>'+mtitle[i]+'</span>'
+				        		 +              '</div>'   
+				        		 +              '<div class="picture">'
+			        			 +               	'<ul class="mui-table-view mui-grid-view" id="img">');
+						
+						
+						//获取图片
+				    	$.ajax({
+							url:'/neueduClient/enterprise/EnterpriseHandler_findMessageImgByMid',
+							data:{mid:mid[i]},
+							dataType:'json',
+							type:'post',
+							async:false,
+							timeout:10000,
+							success:function(img){
+								for(var i =0;i<img.length;i++){
+									html.push('<li class="mui-table-view-cell mui-media mui-col-xs-6">'
+			        						 +   '<p>'
+				                             +       '<img src="/upload/image/'+img[i].imgurl+'" data-preview-src="" data-preview-group="1" />'
+			                                 +   '</p>'
+		        					         +'</li>');
+								}
+							},
+							error:function(xhr,type,erroeThrown){
+								//异常处理
+								console.log(type);
+							}
+						});
+						
+						
+			            html.push(                  '</ul>'
+				        		 +           	'</div>'
+				        		 +              '<div class="status" id="'+mid[i]+'">'
+			        			 +                 	'<span>'+mtime[i]+'</span>'
+                                 +                  '<span class="like1" id="comment" style="border-radius: 4px;">'
+                                 +                    '<a class="comment" href="#"><span class="mui-icon-extra mui-icon-extra-comment">评论</span></a>'
+                                 +                  '</span>'
+                                 +                  '<span class="like2" id="like" style="border-radius: 4px;">'
+			        			 +   	              '<a class="zan" href="#"><span class="mui-icon-extra mui-icon-extra-heart-filled"  >赞</span></a>'                          	
+                                 +                  '</span>'
+                                 +              '</div>'
+ 			        			 +              '<div class="likeRecord" style="margin-top: 12px; border-radius: 4px;">'
+ 			        			 +                  '<span class="mui-icon-extra mui-icon-extra-heart-filled" style="color: red; "><span style="color:black">');
+			            
+			          //获取赞
+				    	$.ajax({
+							url:'/neueduClient/enterprise/EnterpriseHandler_findMessageLikeByMid',
+							data:{mid:mid[i]},
+							dataType:'json',
+							type:'post',
+							async:false,
+							timeout:10000,
+							success:function(like){
+								for(var i =0;i<like.length;i++){
+									if(i!=0){
+										html.push(',');
+									}
+									html.push(like[i].nickname);
+								}
+							},
+							error:function(xhr,type,erroeThrown){
+								//异常处理
+								console.log(type);
+							}
+						});
+			            
+		        		html.push(                 '</span></span>'
+		        		         +             	'</div>'
+			        			 +          '</div>'
+			        			 +        '</div>'
+			        			 +        '<div class="mui-card-footer">'
+			        			 +            '<ul class="mui-table-view"  style="width: 100%;">');
+		        		
+		        		//获得回复
+		        		$.ajax({
+							url:'/neueduClient/enterprise/EnterpriseHandler_findMessageReplyByMid',
+							data:{mid:mid[i]},
+							dataType:'json',
+							type:'post',
+							async:false,
+							timeout:10000,
+							success:function(reply){
+								for(var i=0;i<reply.length;i++){
+									html.push('<li style=" border-radius: 3px; background: #E0E0E0;color: #484848;">'
+											+     '<span style="color: #6633CC;">'+reply[i].nickname+'</span><span>:'+reply[i].content+'</span>'
+											+ '</li>');
+								}
+							},
+							error:function(xhr,type,erroeThrown){
+								//异常处理
+								console.log(type);
+							}
+				    	});
+							
+		        		html.push(            '</ul>'
+			        		     +        '</div>'
+			        		     +      '</div>'
+			        		     +'</li>');
+					}
+					
+					content.innerHTML = html.join('');
+					
+					
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+			});
+		    
+		    
+		    //点赞的功能
+		    mui('body').on('tap','#like',function(){
+            	var mid= this.parentNode.id;
+            	
+            	//huoqu用户信息
+            	$.ajax({
+					url:'/neueduClient/GetUserInfo',
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:1000,
+					success:function(wxUserInfo){
+						nickname=wxUserInfo.nickname;
+						//加赞
+		            	$.ajax({
+							url:'/neueduClient/enterprise/EnterpriseHandler_addlike',
+							data:{
+								mid:mid,
+								nickname:nickname,
+								stime:timetrans(new Date().getTime()),
+							},
+							dataType:'json',
+							type:'post',
+							async:false,
+							timeout:1000,
+							success:function(index){
+								var index=index;
+								location.reload();
+							},
+							error:function(xhr,type,erroeThrown){
+								//异常处理
+								console.log(type);
+							}
+						});
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+						//alert("未取到用户信息");
+						alert("请先登陆微信😂");
+					}
+				});
+            });
+		    
+		    
+		    //获取comment的id
+		    var cmid=null;
+		    //评论
+		    mui('body').on('tap','#comment',function(){
+            	cmid= this.parentNode.id;
+            	document.getElementById("textplace").style.display = "block";
+				
+            })
+            
+            document.getElementById("bodyContent").onclick = function() {
+            	document.getElementById("textplace").style.display = "none";
+            }
+		    
+		    
+		    
+		    
+		    function comment(){
+		    	var comment=document.getElementById("textarea").value;
+		    	
+		    	//huoqu用户信息
+            	$.ajax({
+					url:'/neueduClient/GetUserInfo',
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:1000,
+					success:function(wxUserInfo){
+						nickname=wxUserInfo.nickname;
+						
+						$.ajax({
+				    		url:'/neueduClient/enterprise/EnterpriseHandler_addComment',
+									data:{
+										mid:cmid,
+										content:comment,
+										nickname:nickname,
+										stime:timetrans(new Date().getTime()),
+									},
+									dataType:'json',
+									type:'post',
+									async:false,
+									timeout:1000,
+									success:function(index){
+										document.getElementById("textplace").style.display = "none";
+										var index=index;
+										location.reload();
+									},
+									error:function(xhr,type,erroeThrown){
+										//异常处理
+										console.log(type);
+									}
+				    	});
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+						//alert("未取到用户信息");
+						alert("请先登陆微信😂");
+					}
+				});
+		    	
+		    	
+		    }
+
+		    
+		    function timetrans(date){
+			    var date = new Date(date);//如果date为13位不需要乘1000
+			    var Y = date.getFullYear() + '-';
+			    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+			    var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+			    var h = (date.getHours()+8 < 10 ? '0' + (date.getHours()+8) : date.getHours()+8) + ':';
+			    var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+			    var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
+			    return Y+M+D+h+m+s;
+			}
+
+		</script>		
+		<script src="../js/mui.zoom.js"></script>
+    	<script src="../js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.previewImage();
+		</script>
+	</body>
+
+</html>

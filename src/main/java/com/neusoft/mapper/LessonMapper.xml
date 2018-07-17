@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.mapper.LessonMapper">
+	
+	<select id = "findLessonById" parameterType = "int" resultType = "com.neusoft.bean.Lesson">
+		select * from lesson where qid = #{qid}
+	</select>
+	<select id = "findLessonBranchById" parameterType = "int"  resultType = "com.neusoft.bean.LessonBranch">
+	    select * from lessonbranch where lid = #{lid}
+	</select>
+	<select id = "findFreelistenById" parameterType = "int" resultType = "com.neusoft.bean.Freelisten">
+		select * from freelisten where qid = #{qid} order by id desc
+	</select>
+	<select id = "findLessonByLid" parameterType = "int"  resultType = "com.neusoft.bean.Lesson">
+	    select * from lesson where lid = #{lid}
+	</select>
+	<select id = "findOneFreelistenById" parameterType = "int" resultType = "com.neusoft.bean.Freelisten">
+		select * from freelisten where id = #{id}
+	</select>
+	<select id = "findFewFreelistenById" parameterType = "int" resultType = "com.neusoft.bean.Freelisten">
+		select * from freelisten  where qid = #{qid} limit 0,3
+	</select>
+    <insert id="freelistenbook" parameterType="com.neusoft.bean.Freelistenbook">
+    	insert into freelistenbook values(null, #{fid}, #{username}, #{tel},#{booktime},#{status},#{comment},#{openid})
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <insert id="lessonbook" parameterType="com.neusoft.bean.Deal">
+   	 	insert into sorder values(null,#{lid}, #{openid}, #{total},null, #{actual},#{status},#{ordertime},#{qid},#{transactionid},#{nickname},#{tel},#{branchid})
+     	<selectKey keyProperty="oid" order="AFTER" resultType="int">
+            select LAST_INSERT_ID()
+     	</selectKey>
+    </insert>
+</mapper>

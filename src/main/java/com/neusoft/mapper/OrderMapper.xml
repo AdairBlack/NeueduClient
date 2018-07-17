@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.mapper.OrderMapper">
+	
+	<select id = "findAllOrder" parameterType = "int" resultType = "com.neusoft.bean.Order">
+		select * from neuedu.sorder where qid=#{qid} order by ordertime desc;
+	</select>
+	
+	<select id = "findPartOrder" resultType = "com.neusoft.bean.Order">
+		select * from neuedu.sorder where status=#{0} or status=#{1} and qid=#{2} order by ordertime desc;
+	</select>
+	
+	<select id = "findOrderById" parameterType = "int" resultType = "com.neusoft.bean.Order">
+		select * from neuedu.sorder where oid=#{oid};
+	</select>
+	
+	<update id="refund" parameterType="int">
+		UPDATE neuedu.sorder SET status = "退款中" WHERE oid = #{oid};
+	</update>
+</mapper>

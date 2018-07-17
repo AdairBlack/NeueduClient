@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+    <title>课程购买</title>
+   <!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.css">
+       <link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/style.css"/>
+     <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+      <script src="../js/urlParameter.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=	s6GKDlKENq7GHYs7rmpKieux6qh5Z7ct"></script>
+		<script src="../js/mui.min.js"></script>
+    <script type="text/javascript">
+    	$(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(300)
+    	})
+    	
+    </script>
+    
+</head>
+<!--loading页开始-->
+<div class="loading">
+	<div class="loader">
+        <div class="loader-inner pacman">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+	</div>
+</div>
+<!--loading页结束-->
+<body>
+	<header class="top-header fixed-header">
+		<a class="icona" href="../pages/lesson.html">
+				<img src="/upload/image/detail-left.png"/>
+		</a>
+		<h3>课程</h3>
+			
+
+	</header>
+	
+	<div class="contaniner fixed-conta">
+		<section class="list">
+			<nav>
+				<ul>
+				<div id="segmentedControls" class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-vertical" width="100%;">
+				
+				</div>
+				</ul>
+			</nav>
+			</section>
+		
+			
+			
+			
+			
+		<div id="segmentedControlContents" class="mui-col-xs-9" style="border-left: 1px solid #c8c7cc;">
+				
+			</div>
+	
+	</div>
+	
+	
+
+	
+		 
+		<script type="text/javascript">
+		mui.init({
+			swipeBack: true //启用右滑关闭功能
+		});
+		
+		
+		mui('body').on('tap','a',function(){
+		     window.top.location.href=this.href;
+		});
+		
+		
+		
+		
+		
+		var lid= new Array();
+		var lname= new Array();
+		var imgurl= new Array();
+		var lprice= new Array();
+		var ldesc= new Array();
+		var category= new Array();
+		var qid= new Array();
+		var pubtime= new Array();
+		
+		var length1;
+		
+		var controls = document.getElementById("segmentedControls");
+		var contents = document.getElementById("segmentedControlContents");
+		
+		var cate = new Array();
+		cate[0]="Java";
+		cate[1]="C++";
+		cate[2]="HTML5";
+		cate[3]="Python";
+		
+		var html = [];
+		
+		for (var i=1; i < 5; i++) 
+				html.push('<li><a class="mui-control-item" href="#content' + i + '">' + cate[i-1] + '</a></li>');
+		controls.innerHTML = html.join('');
+		
+		
+			var html2 = [];
+		
+			//ajax响应
+			$.ajax({
+				    url:'/neueduClient/lesson/LessonHandler_findLessonById',
+					data:{qid:"1"},
+					//alert(1);
+					dataType:'json',
+					type:'post',
+					timeout:10000,
+					
+					success:function(data){
+						//返回响应
+						
+						length1=data.length;
+						for(var i=0;i<length1;i++){
+							lid[i]=data[i].lid;
+							lname[i]=data[i].lname;
+							imgurl[i]=data[i].imgurl;
+							lprice[i]=data[i].lprice;
+							ldesc[i]=data[i].ldesc;
+							category[i]=data[i].category;
+							qid[i]=data[i].qid;
+							var date=new Date(data[i].pubtime);
+							pubtime[i]=date.getFullYear()+"年"+date.getMonth()+1+"月"+date.getHours()+"点";
+							//alert(category[i]);
+							//console.log(pubtime[i]);
+										
+						}
+						
+						var i=0;
+						var j=0;
+						
+						
+						
+							for (i = 1; i < 5; i++) {
+								html2.push('<div id="content' + i + '"class="mui-control-content" ><ul class="mui-table-view">');
+								
+								 	for (j = 0; j < length1; j++){
+										//console.log(imgurl[j]);
+										
+										if(category[j+1]==cate[i]){
+										 var imgPath1 = "/upload/image/"+imgurl[j]; 
+										 var m=j+1;
+										 html2.push('<a href="lessonPurchase.html?Lid='+m+'"><img src='+imgPath1+'  width="135%"/><font size="4" color="black">	'+lname[j]+'</font><br><font size="4" color="black"><d>￥'+lprice[j]+'</d></font><font size="4" color="grey"><del>￥'+lprice[j]*2+'</del></font></a><br>');
+										}
+										else{
+										// html2.push(category[j]);
+										}
+										
+									   }
+								 	html2.push('</ul></div>');
+								 
+								
+								}
+								
+							
+			
+						contents.innerHTML = html2.join('');
+						 //默认选中第一个
+						controls.querySelector('.mui-control-item').classList.add('mui-active');
+						contents.querySelector('.mui-control-content').classList.add('mui-active');
+						
+					},
+						
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+					
+				});
+	
+
+
+</script>
+
+</body>
+</html>

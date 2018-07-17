@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+
+	<head>
+		
+		<meta charset="utf-8">
+		<title>bookDetails</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-left: 0;padding-right: 0;">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">订单详情</h1>
+			</div>
+		</header>
+		
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll" id="scroll">
+				<ul class="mui-table-view mui-table-view-chevron">
+				
+				</ul>
+			</div>
+		</div>
+		<script src="../../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/urlParameter.js"></script>
+		<script>
+			
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style:'circle',
+						callback: pulldownRefresh
+					}
+				}
+			});
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+
+			
+			var order;
+			var lesson;
+			$(document).ready(function(){
+				var qid=1;
+				var oid = $.getUrlParam('id');
+				var lid;
+				//ajax响应
+				$.ajax({
+					url:'/neueduClient/order/OrderHandler_findOrderById',
+					dataType:'json',
+					data:{oid:oid},
+					type:'post',
+					async:false,
+					success:function(data){
+						order = data;
+						lid = order.lid;
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				$.ajax({
+					url:'/neueduClient/lesson/LessonHandler_findLessonByLid',
+					dataType:'json',
+					data:{lid:lid},
+					type:'post',
+					async:false,
+					success:function(data){
+						lesson = data;
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				pulldownRefresh();
+			});
+			
+			function refreshOrder(){
+				var oid = $.getUrlParam('id');
+				$.ajax({
+					url:'/neueduClient/order/OrderHandler_findOrderById',
+					dataType:'json',
+					data:{oid:oid},
+					type:'post',
+					async:false,
+					success:function(data){
+						order = data;
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+			}
+			function refreshData() {
+				var hidden = "";
+				if(order.status != "已付款"){
+					hidden = "hidden=\"hidden\"";
+				}
+				var div = document.getElementById("scroll");
+				div.innerHTML =  
+					 '<ul class="mui-table-view mui-table-view-chevron">'
+					+'	<div class="mui-card-header">订单编号:'+order.oid+'</div>'
+					+'	<div class="mui-card-content">'
+					+'		<div class="mui-card-content-inner" >'
+					+'			<li class="mui-table-view-cell mui-media">'
+					+'				<a href="../lessonPurchase.html?Lid='+lesson.lid+'">'
+					+'					<img class="mui-media-object mui-pull-left" src="/upload/image/'+lesson.imgurl+'" >'
+					+'					<div class="mui-media-body" style="float:right">'
+					+'						课程编号: '+lesson.lid+'<br />'
+					+'						课程: '+lesson.lname+'<br />'
+					+'						语言：'+lesson.category
+					+'					</div>'
+					+'				</a>'
+					+'			</li>'
+					+'		</div>'
+					+'	</div>'
+					+'	<div class="mui-card-footer">'
+					+'		订单状态：'+order.status
+					+'		<button onclick="alert()" style="color:red;" '+hidden+'>'
+					+'			退款'
+					+'		</button>'
+					+'	</div>'
+					+'</ul>';
+			}
+			function alert(){
+				var btnArray = ['否，继续学习', '是，暂时放弃'];
+				mui.confirm('请确认是否退款', 'Hello MUI', btnArray, function(e) {
+					if (e.index == 1) {
+						refund();
+					} else {
+						pulldownRefresh();
+					}
+				});
+			}
+			function refund(){
+				$.ajax({
+					url:'/neueduClient/order/OrderHandler_refund',
+					data:{oid:order.oid},
+					type:'post',
+					async:false,
+					success:refreshData(),
+					error:function(xhr,type,errorThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				pulldownRefresh();
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					refreshOrder();
+					refreshData();
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					mui.toast("已刷新");
+				}, 100);
+			}
+
+		</script>
+	</body>
+
+</html>

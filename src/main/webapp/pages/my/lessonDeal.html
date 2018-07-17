@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>预约</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../../css/loading.css"/>
+        <script src="../../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+      <script src="../../js/urlParameter.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=	s6GKDlKENq7GHYs7rmpKieux6qh5Z7ct"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(300)
+    	 })
+       </script>
+	</head>
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a href="../../pages/lessonDescription.html" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">课程购买</h1>
+		</header>
+		
+		<div class="mui-content" style="margin-top: 20;">
+			<div style="top: 20;">
+				<div  class="mui-card" style="background: aliceblue;">
+			        <div class="mui-card-content" onclick="window.open('../../pages/lessonDescription.html','_self')" >
+			        		<ul class="mui-table-view" style="background: aliceblue;"> 
+				                <li id="lesson" class="mui-table-view-cell mui-media">
+									
+				                </li>
+				            </ul>
+			        </div>	
+			    </div> 
+			    
+			</div>
+				<form class="mui-input-group">
+						<div class="mui-input-row ">
+							<label>我的姓名</label>
+							<input id="name" type="text" class="mui-input-speech mui-input-clear" placeholder="输入客户姓名">
+						</div>
+						<div class="mui-input-row">
+							<label>我的电话</label>
+							<input id="phone" type="text" class="mui-input-speech mui-input-clear" placeholder="输入联系电话">
+						</div>
+				</form>
+				<div class="mui-input-row" style="margin: 10px 5px;" >
+						<textarea id="comment" rows="8" placeholder="输入您的备注"></textarea>
+				</div>
+				<div class="mui-button-row">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="deal()">确定购买</button>&nbsp;&nbsp;
+				</div>
+		</div>
+		
+		
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/urlParameter.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			
+				//var Lid = $.getUrlParam('Lid');	
+				//var Lid=1;
+				
+		    
+				var openId=null;
+				var Lid=null;
+				//alert(location.search);
+				var url = location.search; //获取url中"?"符后的字串  
+				var theRequest = new Object();  
+				url=url.split("&")[0];
+				if (url.indexOf("?") != -1) {  
+				      var str = url.substr(1);  
+				       Lid=str.split("=")[1];
+				      
+				}  
+				   //alert(Lid);
+
+				var lesson = document.getElementById("lesson");
+				var html = [];
+				html.push('<img class="mui-media-object mui-pull-left" src="/upload/image/lesson'+Lid+'.jpg"><div class="mui-media-body">购买课程：<p class="mui-ellipsis"><span style="color: black;" id="className">课程</span></p></div>');
+			    lesson.innerHTML = html.join('');
+				
+			    
+		    
+		    
+		    function deal(){  
+		    	var Lid = $.getUrlParam('Lid');	
+		    	//alert(Lid);
+		    var lid=null;
+		    var lname=null;
+		    var imgurl=null;
+		    var lprice=null;
+		    var ldesc=null;
+		    var category=null;
+		    var qid=null;
+		    var pubtime=null;
+		  //ajax响应
+			$.ajax({
+				    url:'/neueduClient/lesson/LessonHandler_findLessonByLid',
+					data:{lid:Lid},
+					dataType:'json',
+					type:'post',
+					timeout:10000,
+					async:false,
+					success:function(data){
+						//返回响应
+						
+							lid=data.lid;
+							lname=data.lname;
+							imgurl=data.imgurl;
+							lprice=data.lprice;
+							ldesc=data.ldesc;
+							category=data.category;
+							qid=data.qid;
+							var date=new Date(data.pubtime);
+							pubtime=date.getFullYear()+"年"+date.getMonth()+"月"+date.getDay()+"日"+date.getHours()+"点";
+							//alert(lprice);
+						
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+			});
+					
+					var branchid;
+					//ajax响应
+					$.ajax({
+						    url:'/neueduClient/lesson/LessonBranchHandler_findLessonBranchById',
+							data:{lid:Lid},
+							dataType:'json',
+							type:'post',
+							async:false,
+							timeout:10000,
+							success:function(data){
+								   branchid=data.branchid;
+								   
+							},
+							
+							error:function(xhr,type,erroeThrown){
+								//异常处理
+								console.log(type);
+							}
+					});
+		    
+		    
+				$.ajax({
+					url:'/neueduClient/GetUserInfo',
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:1000,
+					success:function(wxUserInfo){
+						openId=wxUserInfo.openid;
+						
+						var qid=sessionStorage.getItem("qid");
+						//alert(lprice);
+						//alert(Lid);
+						$.ajax({
+							 url:'/neueduClient/lesson/LessonHandler_lessonbook',
+								data:{
+									lid:Lid,
+									openid:openId,
+									total:lprice,
+						            actual:lprice,
+						            status:'已付款',
+						            ordertime:timetrans(new Date().getTime()),
+						            qid:qid,
+						            transactionid:openId,
+						            nickname:document.getElementById("name").value,
+						            tel:document.getElementById("phone").value,
+						            branchid:branchid,
+									
+		                        },
+								dataType:'json',
+								type:'post',
+								async:false,
+								timeout:10000,
+								success:function(index){
+									alert("成功购买课程");
+									window.location.href="../../pages/lessonDescription.html";
+								},
+								error:function(xhr,type,erroeThrown){
+									alert("失败购买课程");
+									window.location.href="../../pages/lessonDescription.html";
+								}
+						});
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				
+				
+				
+				
+			}
+		    
+		    function timetrans(date){
+			    var date = new Date(date);//如果date为13位不需要乘1000
+			    var Y = date.getFullYear() + '-';
+			    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+			    var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+			    var h = (date.getHours()+8 < 10 ? '0' + (date.getHours()+8) : date.getHours()+8) + ':';
+			    var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+			    var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
+			    return Y+M+D+h+m+s;
+			}
+
+		</script>
+	</body>
+
+</html>

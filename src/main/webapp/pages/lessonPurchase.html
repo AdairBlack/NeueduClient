@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>购课</title>
+    <link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/style.css"/>
+     <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+      <script src="../js/urlParameter.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=	s6GKDlKENq7GHYs7rmpKieux6qh5Z7ct"></script>
+		<style type="text/css">
+		    html,body{height:100%;margin:0px;padding:0px;font-family:"微软雅黑";font-size:14px;}
+		   #allmap{height:300px;width:100%;}
+	    </style>
+    <script type="text/javascript">
+    	$(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(300)
+    	})
+    </script>
+</head>
+<!--loading页开始-->
+<div class="loading">
+	<div class="loader">
+        <div class="loader-inner pacman">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+	</div>
+</div>
+<!--loading页结束-->
+<body>
+	<header class="detail-header fixed-header">
+		<a href="javascript:history.go(-1)"><img src="/upload/image/detail-left.png"/></a>
+		
+		
+	</header>
+	
+	
+	<div class="contaniner fixed-contb">
+		<section class="detail">
+			<figure id="figure">
+				<ul >
+					<li >
+						<a href="#">
+						
+							
+							
+						</a>
+					</li>
+				</ul>
+			</figure>
+			
+			<dl  class="jiage">
+				<ul id="Content">
+				
+							
+				
+			    </ul>
+			</dl>
+			
+			<div class="chose">
+				<ul>
+					<h3>上课地点</h3>
+					<li id="branch">
+					</li>
+				</ul>
+				
+			</div>
+			
+			<a href="#" class="seven">
+				<b>7</b>天无理由退课
+				<span id="sss"></span>
+			</a>
+			
+			<ul class="same">
+				<a href="#">
+					<span>
+						同类推荐
+					</span>
+					<li class="one">
+						<a href="lessonPurchase.html?Lid=9" ><img src="/upload/image/lesson9.jpg"/></a>
+						<p>￥0.01</p>
+					</li>
+					<li>
+						<a href="lessonPurchase.html?Lid=3" ><img src="/upload/image/lesson3.jpg"/></a>
+						<p>￥0.01</p>
+					</li>
+					<li>
+						<a href="lessonPurchase.html?Lid=4" ><img src="/upload/image/lesson4.jpg"/></a>
+						<p>￥0.03</p>
+					</li>
+					<li>
+						<a href="lessonPurchase.html?Lid=5" ><img src="/upload/image/lesson5.jpg"/></a>
+						<p>￥0.01</p>
+					</li>
+				</a>
+			</ul>
+			
+			<article class="detail-article">
+				<nav>
+					<ul class="article">
+						<li id="talkbox1" class="article-active">课程详情</li>
+						<li id="talkbox2">位置</li>
+					</ul>
+				</nav>
+
+				<section class="talkbox1 ">
+					培训班 教育,先入学后付款,一地学习,全国就业达内美国上市公司,毕业学员,企业抢着要,年薪20万不是梦!60万大学生的共同选择!
+				</section>
+
+				<section class="talkbox2 " style="display: none;">
+						<div  class="allmap" id="allmap"></div>
+					</section>
+				
+			</article>
+		</section>
+	</div>
+	
+
+		<footer class="detail-footer fixed-footer" id="foot">
+			<a href="#" class="go-car">
+				<input type="button" value="加入购物车"/>
+			</a>
+			<a href="../pages/lessonDeal.html" class="buy">
+				立即购买
+			</a>
+		</footer>
+	
+
+<script type="text/javascript">
+	$(window).scroll(function() {
+	    if ($(".detail-header").offset().top > 50) {
+        $(".detail-header").addClass("change");
+    } else {
+        $(".detail-header").removeClass("change");
+    }
+	});
+	
+	var Lid = $.getUrlParam('Lid');	
+	var figure = document.getElementById("figure");
+	var html0 = [];
+	html0.push('<img style="width:100%" src="/upload/image/lesson'+Lid+'.jpg"/>');
+	figure.innerHTML = html0.join('');
+
+	var Lid = $.getUrlParam('Lid');	
+	var content = document.getElementById("Content");
+	var html = [];
+	
+	var foot = document.getElementById("foot");
+	var html7 = [];
+	html7.push(
+	'<a href="#" class="go-car">'
+	+'<input type="button" value="加入购物车"/>'
+	+'</a>'
+	+'<a href="../pages/my/lessonDeal.html?Lid='+Lid+'&val?='+new Date().getTime()+'" class="buy">'
+	+'立即购买'
+	+'</a>'
+   );
+    foot.innerHTML = html7.join('');
+	
+    var lid;
+    var lname;
+    var imgurl;
+    var lprice;
+    var ldesc;
+    var category;
+    var qid;
+    var pubtime;
+	//ajax响应
+	$.ajax({
+		    url:'/neueduClient/lesson/LessonHandler_findLessonByLid',
+			data:{lid:Lid},
+			dataType:'json',
+			type:'post',
+			timeout:10000,
+			success:function(data){
+				//返回响应
+				
+					lid=data.lid;
+					lname=data.lname;
+					imgurl=data.imgurl;
+					lprice=data.lprice;
+					ldesc=data.ldesc;
+					category=data.category;
+					qid=data.qid;
+					var date=new Date(data.pubtime);
+					pubtime=date.getFullYear()+"年"+date.getMonth()+"月"+date.getDay()+"日"+date.getHours()+"点";
+					//alert(pubtime);
+					
+					
+					html.push('<dt><h3>'+lname+'课程</h3><div class="collect"><img src="/upload/image/detail-heart-hei.png"/><p>收藏</p></div></dt><dd><b>￥'
+							+lprice+'</b><del>￥'+lprice*2+'</del><input type="button" value=+'+lprice*10+'积分 readonly /><br><small>时间：'+pubtime+'</small></dd>');
+			
+				content.innerHTML = html.join('');
+				
+			},
+			
+			
+			error:function(xhr,type,erroeThrown){
+				//异常处理
+				console.log(type);
+			}
+	});
+	
+
+	$(function(){
+		$('.chose li').click(function(){
+				
+			$(this).addClass('chose-active').siblings().removeClass('chose-active');
+
+			var tags=document.getElementsByClassName('chose-active');//获取标签
+
+			var tagArr = "";
+	        for(var i=0;i < tags.length; i++)
+	        {
+	            tagArr += tags[i].innerHTML;//保存满足条件的元素
+
+	        }
+	       
+	        $('#sss').html(tagArr);
+
+		});
+
+		$('.article li').click(function(){
+
+			$(this).addClass('article-active').siblings().removeClass('article-active');
+			if($(this).attr("id")=="talkbox1"){
+				$('.talkbox1').show();
+				$('.talkbox2').hide();
+			}else{
+				$('.talkbox2').show();
+				$('.talkbox1').hide();
+			}
+
+		});	
+	});
+	
+	
+	
+
+	var longitude;
+    var latitude;
+    var branchName;
+	
+    
+    $.ajax({
+    	url:'/neueduClient/lesson/LessonBranchHandler_findLessonBranchById',
+		data:{lid:Lid},
+		dataType:'json',
+		type:'post',
+		async:false,
+		timeout:10000,
+		success:function(branch){
+			$.ajax({
+				url:'/neueduClient/enterprise/EnterpriseHandler_findAddressByLid',
+				data:{lid:branch.branchid},
+				dataType:'json',
+				type:'post',
+				async:false,
+				timeout:10000,
+				success:function(address){
+					longitude=address.longitude;
+				    latitude=address.latitude;
+				    branchName=address.branch;
+				    $("#branch").append(branchName);
+				    
+				    
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+			});
+		},
+		error:function(xhr,type,erroeThrown){
+			//异常处理
+			console.log(type);
+		}
+    });
+	
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");    // 创建Map实例
+	var point= new BMap.Point(116.331398,39.897445);
+	map.centerAndZoom(point, 13);  // 初始化地图,设置中心点坐标和地图级别
+	
+    // 添加带有定位的导航控件
+    var navigationControl = new BMap.NavigationControl({
+      // 靠左上角位置
+      anchor: BMAP_ANCHOR_TOP_LEFT,
+      // LARGE类型
+      type: BMAP_NAVIGATION_CONTROL_LARGE,
+    });
+    // 添加定位控件
+    var geolocationControl = new BMap.GeolocationControl();
+    map.addControl(navigationControl);
+	map.addControl(geolocationControl);
+	
+
+	var new_point = new BMap.Point(longitude,latitude);
+	var marker = new BMap.Marker(new_point);
+	map.addOverlay(marker);
+	var label = new BMap.Label(branchName,{offset:new BMap.Size(20,-10)});
+	marker.setLabel(label);
+	
+	
+	var geolocation = new BMap.Geolocation();
+	geolocation.getCurrentPosition(function(r){
+			if(this.getStatus() == BMAP_STATUS_SUCCESS){
+				var myIcon = new BMap.Icon("/upload/image/Mapicon.png", new BMap.Size(30,30));
+				var mk = new BMap.Marker(r.point,{icon:myIcon});
+				map.addOverlay(mk);
+				mk.setAnimation(BMAP_ANIMATION_BOUNCE);
+				map.panTo(r.point);
+				var label = new BMap.Label("您的位置",{offset:new BMap.Size(27,-10)});
+                mk.setLabel(label);
+               
+				//alert('您的位置：'+r.point.lng+','+r.point.lat);
+			}
+			else {
+				alert('failed'+this.getStatus());
+			}        
+	},{enableHighAccuracy: true});
+	
+</script>
+</body>
+</html>

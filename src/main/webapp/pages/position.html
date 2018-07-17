@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>位置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+        <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+		    body,html, #allmap {width: 100%;height:80%;font-family:"微软雅黑"; }
+		    #allmap{height:320px;width:100%;margin-top:10;}
+	    </style>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=	s6GKDlKENq7GHYs7rmpKieux6qh5Z7ct"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(200)
+    	 })
+        </script>
+	</head>
+	
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">学校位置</h1>
+		</header>
+		
+		<div class="mui-content">
+			<div  class="allmap" id="allmap"></div>
+		</div>
+		
+			
+		<ul class="mui-table-view" id="list">
+		</ul>    
+
+		
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('body').on('tap','a',function(){
+                 window.top.location.href=this.href;
+            });
+			
+			
+		</script>
+		<script type="text/javascript">
+			// 百度地图API功能
+			var map = new BMap.Map("allmap");    // 创建Map实例
+			var point= new BMap.Point(116.331398,39.897445);
+			var myPoint = new BMap.Point(116.331398,39.897445);
+			map.centerAndZoom(point, 12);  // 初始化地图,设置中心点坐标和地图级别
+			
+			// 添加带有定位的导航控件
+			var navigationControl = new BMap.NavigationControl({
+				// 靠左上角位置
+				anchor: BMAP_ANCHOR_TOP_LEFT,
+				// LARGE类型
+				type: BMAP_NAVIGATION_CONTROL_LARGE,
+			});
+			// 添加定位控件
+			var geolocationControl = new BMap.GeolocationControl();
+			map.addControl(navigationControl);
+			map.addControl(geolocationControl);
+			
+			
+		    //ajax数据声明
+			var branch = new Array();
+			var tel = new Array();
+			var addressPoint=new Array();
+			var marker = new Array();
+			var distance = new Array();
+			var index = new Array();
+			var length;
+			
+			var geolocation = new BMap.Geolocation();
+			geolocation.getCurrentPosition(function(r){
+				if(this.getStatus() == BMAP_STATUS_SUCCESS){
+					myPoint=r.point;
+					var myIcon = new BMap.Icon("/upload/image/Mapicon.png", new BMap.Size(30,30));
+					var mk = new BMap.Marker(r.point,{icon:myIcon});
+					map.addOverlay(mk);
+					mk.setAnimation(BMAP_ANIMATION_BOUNCE);
+					map.panTo(r.point);
+					//alert('您的位置：'+r.point.lng+','+r.point.lat);
+				}
+				else {
+					alert('failed'+this.getStatus());
+				}        
+				
+				show();
+		
+				
+			},{enableHighAccuracy: true});
+			
+		
+			function show(){
+				//ajax响应
+				var qid=sessionStorage.getItem("qid");
+				$("#back").attr("href","../index.html?qid="+qid);
+				
+				$.ajax({
+					url:'/neueduClient/enterprise/EnterpriseHandler_findAddressById',
+					data:{qid:qid},
+					dataType:'json',
+					type:'post',
+					async:false,
+					timeout:10000,
+					success:function(data){
+						length=data.length;
+						for(var i=0;i<length;i++){
+							index[i]=data[i].id-1;
+							branch[i]=data[i].branch;
+							tel[i]=data[i].tel;
+							addressPoint[i]=new BMap.Point(data[i].longitude,data[i].latitude);
+							marker[i]=new BMap.Marker(addressPoint[i]);
+							distance[i]=map.getDistance(myPoint,addressPoint[i]);
+						}
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				
+				//计算两点距离的远近
+				for(var i = 0;i<length;i++){
+					for(var j=i+1;j<length;j++){
+						if(distance[i]>distance[j]){
+							var temp1=distance[i];
+							distance[i]=distance[j];
+							distance[j]=temp1;
+							var temp2=index[i];
+							index[i]=index[j];
+							index[j]=temp2;
+						}
+					}
+				}
+				
+				//显示html
+				var list = document.getElementById("list");
+				var html=[];
+				for(var i=0;i<length;i++){
+					html.push(' <li class="mui-table-view-cell" id="'+index[i]+'">');
+					html.push('<span class="name">'+branch[index[i]]+'</span>');
+					html.push('<div> <span>联系商户</span><br>');
+					html.push('<button type="button"  id="call" class="mui-btn mui-btn-primary mui-icon mui-icon-phone" onclick="contact()">  联系 </button>');
+					html.push('<button type="button" id="guide" class="mui-btn mui-btn-success mui-icon mui-icon-paperplane" style="float: right;" onclick="theLocation()"> 导航 </button> </div>');
+				    html.push('<span id="number">'+tel[index[i]]+'</span> </li>');
+				    
+				    map.addOverlay(marker[i]);
+				}
+				list.innerHTML = html.join('');
+		
+			};
+			
+			
+		
+			//打电话
+			function contact(){
+				mui("li").on('tap','#call',function(){
+					var list=this.parentNode.parentNode;
+					var centerId=parseInt(list.getAttribute('id'));
+		    		phone=tel[centerId];
+		    		var btnArray=['拨打','取消'];
+		    		mui.confirm('拨打'+phone,'提示',btnArray,function(e){
+		    			if(e.index==0){
+		    				plus.device.dial(phone,false);
+		    			}
+		    		});
+		    	});
+			};
+
+		
+			
+			//导航定位
+			function theLocation(){
+				var longitude;
+				var latitude;
+				mui("li").on('tap','#guide',function(){
+					var list=this.parentNode.parentNode;
+					var centerId=parseInt(list.getAttribute('id'));
+					
+					var point=addressPoint[centerId];
+					
+		
+					//map.clearOverlays();
+					
+					var marker = new BMap.Marker(point);
+					map.addOverlay(marker);
+					map.panTo(point)
+				});
+			}
+		
+		</script>
+	</body>
+
+</html>

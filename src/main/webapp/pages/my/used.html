@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+
+	<head>
+		
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-left: 0;padding-right: 0;">
+			<a id="back" class="mui-icon mui-icon-left-nav mui-pull-left"  href="../my.html"></a>
+			<h1 id="title" class="mui-title">我的订单</h1>
+			<div id="orderBar" style="background-color: #CCCCCC;display: inline-block;width: 100%;">
+				<button type="button" class="mui-btn mui-btn-link" style="width: 18.5vw;color: #000000;padding-left: 2vw;">
+					<a href="allOrder.html">全部订单</a>
+				</button>
+				<button type="button" class="mui-btn mui-btn-link" style="width: 18.5vw;color: #000000">
+					<a href="waitToPay.html">待付款</a>
+				</button>
+				<button type="button" class="mui-btn mui-btn-link" style="width: 18.5vw;color: #000000">
+					<a href="payed.html">已付款</a>
+				</button>
+				<button type="button" class="mui-btn mui-btn-link" style="width: 18.5vw;color: #000000">
+					已使用
+				</button>
+				<button type="button" class="mui-btn mui-btn-link" style="width: 18.5vw;color: #000000">
+					<a href="cancelled_refund.html">取消/退款</a>
+				</button>
+			</div>
+		</header>
+		
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper" style="margin-top: 12vw;">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view mui-table-view-chevron"></ul>
+			</div>
+		</div>
+		<script src="../../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/urlParameter.js" type="text/javascript"></script>
+		<script>
+
+			
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style:'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto:true,
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+			
+			var olist;
+			var llist;
+			var qid = sessionStorage.getItem("qid");
+			$(document).ready(function(){
+				//ajax响应
+				$.ajax({
+					url:'/neueduClient/order/OrderHandler_findPartOrder',
+					data:'qid='+qid+'&condition1=已使用 '+'&condition2=',
+					dataType:'json',
+					type:'post',
+					async:false,
+					success:function(data){
+						olist = data;
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+				$.ajax({
+					url:'/neueduClient/lesson/LessonHandler_findLessonById',
+					data:{qid:qid},
+					dataType:'json',
+					type:'post',
+					async:false,
+					success:function(data){
+						llist = data;
+					},
+					error:function(xhr,type,erroeThrown){
+						//异常处理
+						console.log(type);
+					}
+				});
+			});
+			
+
+			var i = 0;
+			var len = 0;
+			function pullupRefresh() {
+				setTimeout(function() {
+					
+					var table = document.body.querySelector('.mui-table-view');
+					var cards = document.body.querySelectorAll('.mui-card');
+					var newCount = cards.length>0?5:10;//首次加载十条
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(cards.length == olist.length); //参数为true代表没有更多数据了。
+					//mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+					for (i = cards.length, len = cards.length + newCount; i < len && i < olist.length; i++) {
+						var j = 0;
+						while(llist[j].lid != olist[i].lid){
+							j++;
+						}
+						var div = document.createElement('div');
+						div.className = 'mui-card';
+						div.innerHTML = 
+							 '	<div class="mui-card-header">订单编号：'+olist[i].oid+'</div>'
+							+'	<div class="mui-card-content">'
+							+'		<div class="mui-card-content-inner">'
+							+'          <a href=\'orderDetails.html?id='+olist[i].oid+'\' style="color: #000000">'
+							+				'课程名称：'+llist[j].lname +'<br/>'
+							+				'下单日期：'+new Date(parseInt(olist[i].ordertime)).toLocaleString().replace(/:\d{1,2}$/,' ')
+							+'          </a>'
+							+'		</div>'
+							+'	</div>'
+							+'	<div class="mui-card-footer" style="float:right">'
+							+		'订单状态：'+olist[i].status
+							+'	</div>';
+						table.appendChild(div);
+						mui.toast("已刷新");
+					}
+				}, 100);
+			}
+			
+			/**
+			  * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					location.reload();
+				}, 100);
+				
+				
+			}
+
+			//添加a的点击事件
+			mui('body').on('tap', 'a', function(e) {
+				location.href = this.href;
+			});  
+		</script>
+	</body>
+
+</html>

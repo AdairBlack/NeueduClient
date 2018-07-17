@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<!--App自定义的css-->
+		<!--<link rel="stylesheet" type="text/css" href="../css/app.css"/>-->
+		
+		<style>
+			html,body {
+				background-color: #efeff4;
+			}
+			.title{
+				margin: 20px 15px 10px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+			 .oa-contact-cell.mui-table .mui-table-cell {
+				padding: 11px 0;
+				vertical-align: middle;
+			}
+			
+			.oa-contact-cell {
+				position: relative;
+				margin: -11px 0;
+			}
+	
+			.oa-contact-avatar {
+				width: 75px;
+			}
+			.oa-contact-avatar img {
+				border-radius: 50%;
+			}
+			.oa-contact-content {
+				width: 100%;
+			}
+			.oa-contact-name {
+				margin-right: 20px;
+			}
+			.oa-contact-name, oa-contact-position {
+				float: left;
+			}
+		</style>
+	    <link rel="stylesheet" type="text/css" href="../css/loaders.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/loading.css"/>
+        <script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+    	 $(window).load(function(){
+    		$(".loading").addClass("loader-chanage")
+    		$(".loading").fadeOut(200)
+    	 })
+        </script>
+	</head>
+    <!--loading页开始-->
+    <div class="loading">
+		<div class="loader">
+	        <div class="loader-inner pacman">
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	          <div></div>
+	        </div>
+		</div>
+    </div>
+    <!--loading页结束-->
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">名师阵容</h1>
+		</header>
+		
+		<div class="mui-content">
+		    <div class="mui-slider" id="slider">
+		         <div class="mui-slider-group mui-slider-loop" id="control">
+		        	<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一个图文表格) -->
+		            
+		       
+		         </div>
+		         
+		         <div class="mui-slider-indicator" style="position: static;background-color: #fff;">
+		            <span class="mui-action mui-action-previous mui-icon mui-icon-back"></span>
+		            <div class="mui-number">
+		                <span>1</span> / 2
+		            </div>
+		            <span class="mui-action mui-action-next mui-icon mui-icon-forward"></span>
+		        </div>
+		    </div>
+		</div>
+		
+		
+		
+		
+		
+		
+		<div class="mui-content">
+			<div class="title">
+				<h4>详细信息</h4>
+			</div>
+
+
+		
+			<div   style="width: 100%;" class="mui-col-xs-9" style="border-left: 1px solid #c8c7cc;">
+				<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="content">
+				
+							
+				
+			    </ul>
+			</div>
+		</div>
+		
+	
+	<script src="../js/mui.min.js"></script>
+	<script>
+	  mui.init({
+			swipeBack:true //启用右滑关闭功能
+	});
+	mui('body').on('tap','a',function(){
+           window.top.location.href=this.href;
+  });
+
+		
+		var tid = new Array();
+		var tname = new Array();
+		var tphoto = new Array();
+		var introduction = new Array();
+		var length;
+		
+		
+		var controls = document.getElementById("control");
+		var contents = document.getElementById("content");
+		var html = [];
+		
+		var qid=sessionStorage.getItem("qid");
+		$("#back").attr("href","../index.html?qid="+qid);
+		//ajax响应
+		$.ajax({
+			    url:'/neueduClient/enterprise/TeacherHandler_findTeacherById',
+				data:{qid:qid},
+				dataType:'json',
+				type:'post',
+				timeout:10000,
+				success:function(data){
+					//返回响应
+					length=data.length;
+					for(var i=0;i<length;i++){
+						tid[i]=data[i].tid;
+						tname[i]=data[i].tname;
+						tphoto[i]=data[i].tphoto;
+						introduction[i]=data[i].introduction;
+						
+					}
+					
+					for(var i=0;i<length-1;i++){
+						if(i==0){
+							html.push('<div class="mui-slider-item mui-slider-item-duplicate">'
+									 +   '<ul class="mui-table-view mui-grid-view">'
+									 +      '<li class="mui-table-view-cell mui-media mui-col-xs-6">'
+									 +         '<a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i]+'">'
+									 +             '<div class="mui-media-body">'+tname[i]+'</div>'
+									 +         '</a></li>'
+									 +      '<li class="mui-table-view-cell mui-media mui-col-xs-6">'
+									 +         '<a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i+1]+'">'
+									 +             '<div class="mui-media-body">'+tname[i+1]+'</div>'
+									 +         '</a></li>'
+									 +    '</ul></div>');			                 
+						}
+						
+						html.push('<div class="mui-slider-item"> <ul class="mui-table-view mui-grid-view"><li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i]+'">'+' <div class="mui-media-body">'+tname[i]+'</div></a></li>'+'<li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i+1]+'">'+'<div class="mui-media-body">'+tname[i+1]+'</div></a></li>'+'</ul></div>');	
+						
+						if(i==length-2)	{
+							html.push('<div class="mui-slider-item mui-slider-item-duplicate"> <ul class="mui-table-view mui-grid-view"><li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i]+'">'+' <div class="mui-media-body">'+tname[i]+'</div></a></li>'+'<li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#"><img class="mui-media-object" src="/upload/image/'+tphoto[i+1]+'">'+'<div class="mui-media-body">'+tname[i+1]+'</div></a></li>'+'</ul></div>');			                 	
+						}
+					}
+					
+					controls.innerHTML = html.join('');
+					
+					var slider = mui("#slider");
+
+					slider.slider({
+								interval: 5000
+				    });
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+				
+				 //默认选中第一个
+				
+			}
+		);
+		
+		var html2=[];
+		//ajax响应
+		$.ajax({
+			    url:'/neueduClient/enterprise/TeacherHandler_findTeacherById',
+				data:{qid:'1'},
+				dataType:'json',
+				type:'post',
+				timeout:10000,
+				success:function(data){
+					//返回响应
+					length=data.length;
+					
+					
+					for(var i=0;i<length;i++){
+						tid[i]=data[i].tid;
+						tname[i]=data[i].tname;
+						tphoto[i]=data[i].tphoto;
+						introduction[i]=data[i].introduction;
+						html2.push('<li class="mui-table-view-cell"><div class="mui-slider-cell"><div class="oa-contact-cell mui-table"><div class="oa-contact-avatar mui-table-cell"><img style="width: 70px;" src="/upload/image/'+tphoto[i]+'" /></div>');
+						html2.push('<div class="oa-contact-content mui-table-cell"><div class="mui-clearfix"><h4 class="oa-contact-name">'+tname[i]+'</h4><span class="oa-contact-position mui-h6">'+introduction[i]+'</span></div></div></div></div></li>');
+					}
+					contents.innerHTML = html2.join('');
+				},
+				error:function(xhr,type,erroeThrown){
+					//异常处理
+					console.log(type);
+				}
+				
+				 //默认选中第一个
+				
+			}
+		);
+		
+		
+		
+		
+	</script>
+	
+		</body>
+	
+</html>
